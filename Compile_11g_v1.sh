@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# By Hatem Moushir 2026 v1.1
 shopt -s nocaseglob
 
 NOW_DATE=$(date +"%y%m%d_%H%M")
