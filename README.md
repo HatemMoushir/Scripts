@@ -1,5 +1,4 @@
 📂 Oracle Automation Scripts Repository
-English Version
 Description:
 This repository contains automation scripts for compiling and deploying Oracle Forms, Reports, PL/SQL libraries (PLLs), and Java Beans across Oracle 11g, 12c, and 14c environments. It simplifies builds, ensures version control, and supports smart deployment workflows.
 Contents:
@@ -15,7 +14,6 @@ Optional rollback on build failures.
 Hash verification and smart classpath handling.
 Usage:
 Clone the repository and follow the instructions in each script folder for compilation and deployment.
-النسخة العربية
 الوصف:
 يحتوي هذا الريبو على سكريبتات لأتمتة عملية تجميع ونشر Oracle Forms, Reports, مكتبات PL/SQL (PLLs)، و Java Beans عبر بيئات Oracle 11g و12c و14c. تساعد هذه السكريبتات على تبسيط عملية البناء، وضمان التحكم في النسخ، ودعم سير عمل النشر الذكي.
 المحتويات:
