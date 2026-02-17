@@ -1,5 +1,5 @@
 #!/bin/bash
-# by Hatem Moushir 2026
+# By Hatem Moushir 2026 v1.1
 shopt -s nocaseglob
 
 NOW_DATE=$(date +"%y%m%d_%H%M")
@@ -40,24 +40,23 @@ done
 # 1️⃣ Compile PLL → PLX
 found_plls=false
 for i in "$CUR_FLDR"/*.pll; do
-    [ -e "$i" ] || continue
-    found_plls=true
+    [ -e "$i" ] || continue; found_plls=true
     if [ ! -s "$i" ]; then
         echo "Skipping empty/corrupted PLL $(basename $i)" | tee -a "$LOG_FILE"
-        skipped_plls=$((skipped_plls+1))
-        continue
+        skipped_plls=$((skipped_plls+1)); continue
     fi
 
     echo "Compiling PLL $(basename $i)" | tee -a "$LOG_FILE"
     chmod 0777 "$i"
-    sudo -u oracle $ORACLE_HOME/bin/frmcmp_batch.sh \
-        module="$i" userid=$CONN_STR batch=yes moduletype=library compile_all=yes window_state=minimize \
+    sudo -u oracle $ORACLE_HOME/bin/frmcmp.sh \
+        module="$i" userid=$CONN_STR batch=yes moduletype=library compile_all=yes \
         >> "$LOG_FILE" 2>&1
 
     if [ $? -eq 0 ]; then
         plx="$(basename "${i%.pll}.plx")"
         mv "$CUR_FLDR/$plx" "$WORK_DIR/$plx"
         cp "$WORK_DIR/$plx" "$VERSIONS_DIR/$plx"
+        # نسخ الـ PLL المصدرية (مش move)
         cp "$i" "$SRC_PLLS/$(basename $i)"
         cp "$i" "$VERSIONS_DIR/$(basename $i)"
         compiled_plls=$((compiled_plls+1))
@@ -66,7 +65,6 @@ for i in "$CUR_FLDR"/*.pll; do
         errors=$((errors+1))
     fi
 done
-
 if [ "$found_plls" = false ]; then
     echo "No PLL files found in $CUR_FLDR" | tee -a "$LOG_FILE"
 fi
@@ -74,18 +72,16 @@ fi
 # 2️⃣ Compile Forms → FMX
 found_forms=false
 for i in "$CUR_FLDR"/*.fmb; do
-    [ -e "$i" ] || continue
-    found_forms=true
+    [ -e "$i" ] || continue; found_forms=true
     if [ ! -s "$i" ]; then
         echo "Skipping empty/corrupted form $(basename $i)" | tee -a "$LOG_FILE"
-        skipped_forms=$((skipped_forms+1))
-        continue
+        skipped_forms=$((skipped_forms+1)); continue
     fi
 
     echo "Compiling form $(basename $i)" | tee -a "$LOG_FILE"
     chmod 0777 "$i"
-    sudo -u oracle $ORACLE_HOME/bin/frmcmp_batch.sh \
-        module="$i" userid=$CONN_STR batch=yes compile_all=yes window_state=minimize \
+    sudo -u oracle $ORACLE_HOME/bin/frmcmp.sh \
+        module="$i" userid=$CONN_STR batch=yes compile_all=yes \
         >> "$LOG_FILE" 2>&1
 
     if [ $? -eq 0 ]; then
@@ -100,7 +96,6 @@ for i in "$CUR_FLDR"/*.fmb; do
         errors=$((errors+1))
     fi
 done
-
 if [ "$found_forms" = false ]; then
     echo "No FMB files found in $CUR_FLDR" | tee -a "$LOG_FILE"
 fi
@@ -108,12 +103,10 @@ fi
 # 3️⃣ Compile Reports → REP
 found_reports=false
 for i in "$CUR_FLDR"/*.rdf; do
-    [ -e "$i" ] || continue
-    found_reports=true
+    [ -e "$i" ] || continue; found_reports=true
     if [ ! -s "$i" ]; then
         echo "Skipping empty/corrupted report $(basename $i)" | tee -a "$LOG_FILE"
-        skipped_reports=$((skipped_reports+1))
-        continue
+        skipped_reports=$((skipped_reports+1)); continue
     fi
 
     echo "Compiling report $(basename $i)" | tee -a "$LOG_FILE"
@@ -134,7 +127,6 @@ for i in "$CUR_FLDR"/*.rdf; do
         errors=$((errors+1))
     fi
 done
-
 if [ "$found_reports" = false ]; then
     echo "No RDF files found in $CUR_FLDR" | tee -a "$LOG_FILE"
 fi
@@ -149,8 +141,4 @@ echo "Reports compiled: $compiled_reports" >> "$LOG_FILE"
 echo "Reports skipped: $skipped_reports" >> "$LOG_FILE"
 echo "Errors: $errors" >> "$LOG_FILE"
 
-if [ $errors -gt 0 ]; then
-    exit 1
-else
-    exit 0
-fi
+if [ $errors -gt 0 ]; then exit 1; else exit 0; fi
